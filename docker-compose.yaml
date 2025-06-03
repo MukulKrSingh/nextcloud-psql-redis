@@ -1,0 +1,46 @@
+
+services:
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    restart: always
+    ports:
+        - 8080:80
+    environment:
+        - POSTGRES_HOST=db
+        - POSTGRES_USER=nextcloud
+        - POSTGRES_PASSWORD=postgresqlpassword
+        - POSTGRE_DB=nextcloud
+        - REDIS_HOST=redis
+        - REDIS_HOST_PASSWORD=redispassword
+    volumes:
+        - nextcloud:/var/www/html
+    depends_on:
+      - db
+      - redis
+  
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=postgresqlpassword
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  
+  redis:
+    image: redis
+    container_name: redis
+    command: redis-server --requirepass redispassword
+    volumes:
+      - redis_data:/data
+
+volumes:
+  nextcloud:
+  db_data:
+  redis_data:
+
+              
